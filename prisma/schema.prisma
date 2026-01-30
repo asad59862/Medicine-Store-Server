@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String     @id
+  name          String
+  email         String
+  emailVerified Boolean    @default(false)
+  image         String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  role          String?    @default("CUSTOMER")
+  phone         String
+  status        String?    @default("ACTIVE")
+  sessions      Session[]
+  accounts      Account[]
+  medicines     medicine[]
+  orders        order[]
+  reviews       review[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model medicine {
+  id           String      @id @default(uuid())
+  name         String
+  description  String
+  price        Decimal     @db.Decimal(10, 2)
+  stock        Int
+  image        String
+  manufacturer String
+  sellerId     String
+  category     String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  seller       User        @relation(fields: [sellerId], references: [id])
+  orderItems   orderItem[]
+  reviews      review[]
+}
+
+model order {
+  id              String        @id @default(uuid())
+  customerId      String
+  status          OrderStatus   @default(PLACED)
+  shippingAddress String
+  paymentMethod   PaymentMethod @default(COD)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  customer User        @relation(fields: [customerId], references: [id])
+  items    orderItem[]
+}
+
+model orderItem {
+  id         String  @id @default(uuid())
+  orderId    String
+  medicineId String
+  quantity   Int
+  price      Decimal @db.Decimal(10, 2)
+
+  order    order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  medicine medicine @relation(fields: [medicineId], references: [id])
+}
+
+enum OrderStatus {
+  PLACED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  COD
+}
+
+model review {
+  id         String   @id @default(uuid())
+  rating     Int
+  comment    String
+  userId     String
+  medicineId String
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id])
+  medicine medicine @relation(fields: [medicineId], references: [id])
+
+  @@unique([userId, medicineId])
+}
