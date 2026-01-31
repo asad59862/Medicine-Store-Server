@@ -3,6 +3,9 @@ import cors from "cors";
 import { medicineRouter } from "./modules/medicien/medicine.route";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
+import { OrderRouter } from "./modules/Order/order.route";
+import { Userinformation } from "./middleware/pesonalinfo";
+
 
  // fixed folder name
 
@@ -10,17 +13,17 @@ const app: Application = express();
 
 // Enable CORS
 
-
+app.use(express.json());
 app.use(
   cors({
     origin:"http://localhost:3000",
     credentials: true,
   }),
 );
-
-app.use(express.json());
+app.use("/api/auth",Userinformation)
 app.all("/api/auth/*splat", toNodeHandler(auth));
 // Enable JSON body parsing
+
 
 
 // Test route
@@ -30,6 +33,9 @@ app.get("/", (req: Request, res: Response) => {
 
 
 // Medicine routes
-app.use("/api/medicine", medicineRouter);
+app.use("/api", medicineRouter);
+
+// Order Routes
+app.use("/api/order",OrderRouter)
 
 export default app;
