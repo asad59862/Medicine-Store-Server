@@ -65,11 +65,6 @@ export type Verification = Prisma.VerificationModel
  */
 export type medicine = Prisma.medicineModel
 /**
- * Model order
- * 
- */
-export type order = Prisma.orderModel
-/**
  * Model orderItem
  * 
  */

@@ -21,8 +21,9 @@ model User {
   sessions      Session[]
   accounts      Account[]
   medicines     medicine[]
-  orders        order[]
-  reviews       review[]
+
+  reviews    review[]
+  orderItems orderItem[]
 
   @@unique([email])
   @@map("user")
@@ -93,28 +94,19 @@ model medicine {
   reviews      review[]
 }
 
-model order {
+model orderItem {
   id              String        @id @default(uuid())
   customerId      String
+  medicineId      String
   status          OrderStatus   @default(PLACED)
   shippingAddress String
   paymentMethod   PaymentMethod @default(COD)
+  quantity        Int
+  price           Decimal       @db.Decimal(10, 2)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
-
-  customer User        @relation(fields: [customerId], references: [id])
-  items    orderItem[]
-}
-
-model orderItem {
-  id         String  @id @default(uuid())
-  orderId    String
-  medicineId String
-  quantity   Int
-  price      Decimal @db.Decimal(10, 2)
-
-  order    order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  medicine medicine @relation(fields: [medicineId], references: [id])
+  customer        User          @relation(fields: [customerId], references: [id])
+  medicine        medicine      @relation(fields: [medicineId], references: [id])
 }
 
 enum OrderStatus {

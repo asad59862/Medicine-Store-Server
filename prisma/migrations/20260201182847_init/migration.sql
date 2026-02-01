@@ -74,8 +74,8 @@ CREATE TABLE "medicine" (
     "stock" INTEGER NOT NULL,
     "image" TEXT NOT NULL,
     "manufacturer" TEXT NOT NULL,
-    "sellerId" TEXT NOT NULL,
-    "categoryId" TEXT NOT NULL,
+    "Creater" TEXT NOT NULL,
+    "category" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -83,35 +83,17 @@ CREATE TABLE "medicine" (
 );
 
 -- CreateTable
-CREATE TABLE "category" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "slug" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "category_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "order" (
+CREATE TABLE "orderItem" (
     "id" TEXT NOT NULL,
     "customerId" TEXT NOT NULL,
+    "medicineId" TEXT NOT NULL,
     "status" "OrderStatus" NOT NULL DEFAULT 'PLACED',
     "shippingAddress" TEXT NOT NULL,
     "paymentMethod" "PaymentMethod" NOT NULL DEFAULT 'COD',
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "order_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "orderItem" (
-    "id" TEXT NOT NULL,
-    "orderId" TEXT NOT NULL,
-    "medicineId" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
     "price" DECIMAL(10,2) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "orderItem_pkey" PRIMARY KEY ("id")
 );
@@ -144,12 +126,6 @@ CREATE INDEX "account_userId_idx" ON "account"("userId");
 CREATE INDEX "verification_identifier_idx" ON "verification"("identifier");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "category_name_key" ON "category"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "category_slug_key" ON "category"("slug");
-
--- CreateIndex
 CREATE UNIQUE INDEX "review_userId_medicineId_key" ON "review"("userId", "medicineId");
 
 -- AddForeignKey
@@ -159,16 +135,10 @@ ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "account" ADD CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "medicine" ADD CONSTRAINT "medicine_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "medicine" ADD CONSTRAINT "medicine_Creater_fkey" FOREIGN KEY ("Creater") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "medicine" ADD CONSTRAINT "medicine_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "order" ADD CONSTRAINT "order_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "orderItem" ADD CONSTRAINT "orderItem_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "orderItem" ADD CONSTRAINT "orderItem_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "orderItem" ADD CONSTRAINT "orderItem_medicineId_fkey" FOREIGN KEY ("medicineId") REFERENCES "medicine"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

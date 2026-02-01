@@ -56,7 +56,6 @@ export const ModelName = {
   Account: 'Account',
   Verification: 'Verification',
   medicine: 'medicine',
-  order: 'order',
   orderItem: 'orderItem',
   review: 'review'
 } as const
@@ -155,25 +154,17 @@ export const MedicineScalarFieldEnum = {
 export type MedicineScalarFieldEnum = (typeof MedicineScalarFieldEnum)[keyof typeof MedicineScalarFieldEnum]
 
 
-export const OrderScalarFieldEnum = {
+export const OrderItemScalarFieldEnum = {
   id: 'id',
   customerId: 'customerId',
+  medicineId: 'medicineId',
   status: 'status',
   shippingAddress: 'shippingAddress',
   paymentMethod: 'paymentMethod',
+  quantity: 'quantity',
+  price: 'price',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
-} as const
-
-export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
-
-
-export const OrderItemScalarFieldEnum = {
-  id: 'id',
-  orderId: 'orderId',
-  medicineId: 'medicineId',
-  quantity: 'quantity',
-  price: 'price'
 } as const
 
 export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]

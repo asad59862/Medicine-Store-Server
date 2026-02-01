@@ -5,6 +5,7 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
 import { OrderRouter } from "./modules/Order/order.route";
 import { Userinformation } from "./middleware/pesonalinfo";
+import { userRouter } from "./modules/UserInformaino/user.route";
 
 
  // fixed folder name
@@ -36,6 +37,9 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api", medicineRouter);
 
 // Order Routes
-app.use("/api/order",OrderRouter)
+app.use("/api", OrderRouter)
+
+// admin access
+app.use("/api",userRouter)
 
 export default app;
